@@ -1,30 +1,44 @@
-name: hugo push to github pages
+name: Hugo
 
 on:
   push:
     branches:
-    - blog
+      - master  # 當master分支有push操作時
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # 找尋Hugo主題(true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.94.2' # hugo 版本
+          extended: true  # 如果是使用extended版本的務必取消註解。
 
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v2
-      with:
-        hugo-version: '0.63.2'
-        extended: true
+      - name: Build
+        run: hugo --minify
 
-    - name: Build
-      run: HUGO_ENV=production hugo --gc --minify
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.HUGO_DEPLOY_TOKEN }}
+          PUBLISH_BRANCH: gh-pages  # 推送到 gh-pages 分支
+          PUBLISH_DIR: ./public     # hugo 生成的目錄
+          commit_message: ${{ github.event.head_commit.message }}
 
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v2
-      env:
-        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        PUBLISH_BRANCH: master
-        PUBLISH_DIR: ./public
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
