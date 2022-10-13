@@ -1,51 +1,30 @@
+name: hugo push to github pages
+
 on:
   push:
-    branches: [main]
+    branches:
+    - blog
 
 jobs:
-  push-to-mirror:
-    runs-on: ubuntu-latest
+  build-deploy:
+    runs-on: ubuntu-18.04
     steps:
-      - name: Clone
-        run: |
-          git config --global init.defaultBranch main
-          git init
-          git remote add origin https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          git fetch --all
-          for branch in `git branch -a | grep remotes | grep -v HEAD`; do
-            git branch --track ${branch##*/} $branch
-          done
-        env:
-          GITHUB_REPOSITORY: rcy1314/noisedh
-          #GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
-          #GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          
-      - name: Push to Coding
-        run: |
-          echo "stop!"
-          #remote_repo="https://${CODING_USERNAME}:${CODING_PASSWORD}@e.coding.net/${CODING_REPOSITORY}.git"
-          #git remote add coding "${remote_repo}"
-          #git show-ref # useful for debugging
-          #git branch --verbose
-          # publish all
-          #git push --all --force coding
-          #git push --tags --force coding
-        env:
-          CODING_REPOSITORY: rcy1314/noisedh
-          #CODING_USERNAME: ${{ secrets.CODING_USERNAME }}
-          #CODING_PASSWORD: ${{ secrets.CODING_PASSWORD }}
-          
-      - name: Push to Gitee
-        run: |
-          echo "stop!"
-          #remote_repo="https://${GITEE_USERNAME}:${GITEE_PASSWORD}@gitee.com/${GITEE_REPOSITORY}.git"
-          #git remote add gitee "${remote_repo}"
-          #git show-ref # useful for debugging
-          #git branch --verbose
-          # publish all
-          #git push --all --force gitee
-          #git push --tags --force gitee
-        env:
-          GITEE_REPOSITORY: rcy1314/noisedh
-          #GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
-          #GITEE_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: '0.63.2'
+        extended: true
+
+    - name: Build
+      run: HUGO_ENV=production hugo --gc --minify
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: master
+        PUBLISH_DIR: ./public
