@@ -1,0 +1,227 @@
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery-ui.min.1.12.1.js' id='jquery-ui-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+
+/* <![CDATA[ */
+//var theme = {"ajaxurl":"https:\/\/nav.baidu.com\/wp-admin\/admin-ajax.php","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"https:\/\/api.badi.cn\/favicon\/","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+/* ]]> */
+</script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+<script type='text/javascript' src='{{ $.Site.Params.siteurl }}/assets/js/onenav-app.js' id='appjs-js'></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+//夜间模式
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+//夜间模式切换
+$("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageL }})");   //默认浅色背景
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageL }})");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageD }})")
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+<!-- 弹窗提示 -->
+
+		
+    <!--link rel="stylesheet" href="assets/css/tc.css" />
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <body>
+    <div class="layer"></div>
+    <div id="globalAd">
+        <div id='hero-img' style="background-color: #1a95ff;background: linear-gradient(to left, #5dadf3 0, #4583ca 100%);">
+        </div>
+        <div id='profile-img'>
+            <img src="https://cdn.jsdelivr.net/gh/rcy1314/tuchuang@main/NV/image.700l662bj680.jpg" />
+        </div>
+        <div id='content'>
+            <p style="font-size: 16px;font-weight: bold;">公告</p>
+            <p></p>
+            <p>Noise导航站正在完成静态化</p>
+            <p>收录来源于我的各个网站及频道</p>
+            <p>欢迎联系我提出建议及网站投稿</p>
+            <p>主域名：www.noisedh.cn</p>
+            <p>Netlify:noisedh.netlify.app</p>
+            <a onclick="closeGlobalAd();" class="btn btn-default" rel='nofollow'>我已了解</a>
+            <a href="http://www.noisedh.cn" onclick="redirectUrlToActive();" class="btn btn-default" rel='nofollow'>点击访问</a>
+        </div>
+    </div>
+
+    <script>
+        jQuery.cookie = function(name, value, options) {
+            if(typeof value != 'undefined') {
+                options = options || {};
+                if(value === null) {
+                    value = '';
+                    options.expires = -1;
+                }
+                var expires = '';
+                if(options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
+                    var date;
+                    if(typeof options.expires == 'number') {
+                        date = new Date();
+                        var totalTime = 24 * 3600;
+                        var hour = date.getHours();
+                        var minutes = date.getMinutes();
+                        var seconds = date.getSeconds();
+                        var pastTime = 3600 * hour + 60 * minutes + seconds;
+                        var leftTime = totalTime - pastTime;
+                        date.setTime(date.getTime() + (options.expires * leftTime * 1000));
+                    } else {
+                        date = options.expires;
+                    }
+                    expires = '; expires=' + date.toUTCString();
+                }
+                var path = options.path ? '; path=' + (options.path) : '';
+                var domain = options.domain ? '; domain=' + (options.domain) : '';
+                var secure = options.secure ? '; secure' : '';
+                document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+            } else {
+                var cookieValue = null;
+                if(document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for(var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        if(cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        };
+        $(function() {
+            var COOKIE_NAME = "erdangjiade";
+            if($.cookie(COOKIE_NAME)) {
+                $(".layer").hide();
+                $("#globalAd").hide();
+            } else {
+                var erdangjiadeH = $(window).height();
+                var erdangjiadeW = $(window).width();
+                $(".layer").show();
+                $("#globalAd").css({
+                    'top': erdangjiadeH / 2 - $("#globalAd").height() / 2,
+                    'left': erdangjiadeW / 2 - $("#globalAd").width() / 2
+                });
+                $("#globalAd").slideDown(300, function() {
+                    setTimeout("closeGloableAd()", '300000');
+                });
+                $.cookie(COOKIE_NAME, "erdangjiade", {
+                    path: '/',
+                    expires: 1
+                });
+            }
+        });
+
+        function closeGlobalAd() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+
+        }
+
+        function redirectUrlToActive() {
+            $('#globalAd').hide();
+            $('.layer').hide();
+        }
+    </script>
+   <!- 弹窗结束 -->
+</body>
+</html>
