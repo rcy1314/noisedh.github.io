@@ -1,70 +1,51 @@
-# Sample workflow for building and deploying a Hugo site to GitHub Pages
-name: Deploy Hugo site to Pages
-
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
-# Default to bash
-defaults:
-  run:
-    shell: bash
+    branches: [main]
 
 jobs:
-  # Build job
-  build:
+  push-to-mirror:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.102.3
     steps:
-      - name: Install Hugo CLI
+      - name: Clone
         run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_Linux-64bit.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v2
-      - name: Build with Hugo
+          git config --global init.defaultBranch main
+          git init
+          git remote add origin https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git fetch --all
+          for branch in `git branch -a | grep remotes | grep -v HEAD`; do
+            git branch --track ${branch##*/} $branch
+          done
         env:
-          # For maximum backward compatibility with Hugo modules
-          HUGO_ENVIRONMENT: production
-          HUGO_ENV: production
+          GITHUB_REPOSITORY: shenweiyan/WebStack-Hugo
+          #GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+          #GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          
+      - name: Push to Coding
         run: |
-          hugo \
-            --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: ./public
-
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          echo "stop!"
+          #remote_repo="https://${CODING_USERNAME}:${CODING_PASSWORD}@e.coding.net/${CODING_REPOSITORY}.git"
+          #git remote add coding "${remote_repo}"
+          #git show-ref # useful for debugging
+          #git branch --verbose
+          # publish all
+          #git push --all --force coding
+          #git push --tags --force coding
+        env:
+          CODING_REPOSITORY: shumlab/webstack/WebStack-Hugo
+          #CODING_USERNAME: ${{ secrets.CODING_USERNAME }}
+          #CODING_PASSWORD: ${{ secrets.CODING_PASSWORD }}
+          
+      - name: Push to Gitee
+        run: |
+          echo "stop!"
+          #remote_repo="https://${GITEE_USERNAME}:${GITEE_PASSWORD}@gitee.com/${GITEE_REPOSITORY}.git"
+          #git remote add gitee "${remote_repo}"
+          #git show-ref # useful for debugging
+          #git branch --verbose
+          # publish all
+          #git push --all --force gitee
+          #git push --tags --force gitee
+        env:
+          GITEE_REPOSITORY: shenweiyan/WebStack-Hugo
+          #GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          #GITEE_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
