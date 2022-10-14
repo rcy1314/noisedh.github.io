@@ -1,4 +1,4 @@
-baseURL = "https://rcy1314.github.io/noisedh.github.io"
+baseURL = "https://rcy1314.github.io/noisedh.github.io/"
 languageCode = "zh-CN"
 title = "Noise导航 & 收录值得珍藏的网站"
 theme = "WebStack-Hugo"
@@ -6,7 +6,10 @@ preserveTaxonomyNames = true
 disablePathToLower = true
 hasCJKLanguage = true
 publishDir = "docs"
-
+hugo -D // 生成静态网页
+git add .
+git commit -m "first commit"
+git push
 
 [params]
     author        = "Noise导航"
