@@ -6,10 +6,6 @@ preserveTaxonomyNames = true
 disablePathToLower = true
 hasCJKLanguage = true
 publishDir = "docs"
-hugo -D // 生成静态网页
-git add .
-git commit -m "first commit"
-git push
 
 [params]
     author        = "Noise导航"
