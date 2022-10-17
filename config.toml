@@ -1,4 +1,4 @@
-baseURL = "https://rcy1314.github.io/noisedh"
+baseURL = "https://www.noisedh.cn"
 languageCode = "zh-CN"
 title = "Noise导航 & 收录值得珍藏的网站"
 theme = "WebStack-Hugo"
@@ -6,6 +6,7 @@ preserveTaxonomyNames = true
 disablePathToLower = true
 hasCJKLanguage = true
 publishDir = "docs"
+
 
 [params]
     author        = "Noise导航"
