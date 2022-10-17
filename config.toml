@@ -1,4 +1,4 @@
-baseURL = "https://www.noisedh.cn"
+baseURL = "https://github.com/rcy1314/noisedh.github.io"
 languageCode = "zh-CN"
 title = "Noise导航 & 收录值得珍藏的网站"
 theme = "WebStack-Hugo"
